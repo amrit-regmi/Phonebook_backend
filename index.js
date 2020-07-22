@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 app.use(express.json()) 
@@ -11,6 +12,8 @@ app.use(morgan(':method :url :status  :res[content-length]  :response-time ms :p
 const cors = require('cors')
 app.use(cors())
 app.use(express.static('build'))
+
+const Person = require('./models/person')
 
 let   persons = [
     {
@@ -34,9 +37,11 @@ let   persons = [
       id: 4
     }
   ]
-
+  
   app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(results=>{
+      res.json(results)
+    })
   })
 
   app.get('/info', (req, res) => {
@@ -55,7 +60,7 @@ let   persons = [
   })
 
   app.post('/api/persons/', (req, res) => {
-    const id = Math.floor(Math.random()*1000,0)
+   /* const id = Math.floor(Math.random()*1000,0)*/
     const body = req.body
     
     if(body.name === "" || body.number === "" ){
@@ -63,14 +68,24 @@ let   persons = [
             error: 'Name and Number cannot be empty' 
         })
     }
-    if (persons.some(person => person.name.toLocaleLowerCase() === body.name.toLowerCase())) {
+
+    const person = new Person({
+      name: body.name,
+      number: body.number,
+      })
+    
+    person.save().then(result => {
+        res.json(result)
+      })
+    /*if (persons.some(person => person.name.toLowerCase() === body.name.toLowerCase())) {
         return res.status(400).json({ 
             error: 'Name must be Unique' 
         })
         }
         person = {...body,id:id}
         persons = persons.concat(person)
-        res.json(person)
+        res.json(person)*/
+        
     })
 
 
