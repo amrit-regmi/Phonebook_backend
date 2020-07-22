@@ -8,6 +8,8 @@ morgan.token('params', function(req, res, param) {
 })
 app.use(morgan(':method :url :status  :res[content-length]  :response-time ms :params[id]' ));
 
+const cors = require('cors')
+app.use(cors())
 
 let   persons = [
     {
@@ -67,7 +69,7 @@ let   persons = [
         }
         person = {...body,id:id}
         persons = persons.concat(person)
-        res.json(persons)
+        res.json(person)
     })
 
 
@@ -78,7 +80,7 @@ let   persons = [
       res.status(204).end
   })
 
-  const PORT = 3001
+  const PORT = process.env.PORT || 3001
   app.listen(PORT, () => {
     console.log(`PhoneBook Server running on port ${PORT}`)
   })
