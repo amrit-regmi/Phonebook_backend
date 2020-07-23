@@ -45,7 +45,8 @@ const { response } = require('express')
   app.put('/api/persons/:id',(req,res,next) =>{
     const body = req.body
     const person={
-      number: body.number
+      number: body.number,
+      name: body.name
     }
     
     Person.findByIdAndUpdate(req.params.id,person,{new:true, runValidators: true})
