@@ -41,15 +41,16 @@ const { response } = require('express')
     }
   ]*/
   
-  //PUT REQUEST 
+  //PUT REQUEST (Updates both name and number) 
   app.put('/api/persons/:id',(req,res,next) =>{
     const body = req.body
+    console.log(body)
     const person={
       number: body.number,
       name: body.name
     }
     
-    Person.findByIdAndUpdate(req.params.id,person,{new:true, runValidators: true})
+    Person.findByIdAndUpdate(req.params.id,person,{new:true, runValidators: true,context: 'query' })
       .then(updatedPerson=>{
         console.log(updatedPerson)
         res.json(updatedPerson)
@@ -94,7 +95,7 @@ const { response } = require('express')
 
     const person = new Person({
       name: body.name,
-      number: body.number,
+      number: body.number
       })
     
     person.save().then(result => {
@@ -124,14 +125,17 @@ const { response } = require('express')
   })
 
   const errorHandler =(error,req,res,next)=> {
+    
     if (error.name === 'CastError') {
       return res.status(400).send({ error: 'malformatted id' })
     } 
-
-    if (error.name === 'ValidationError'){
+    else if (error.name === 'ValidationError'){
+      console.log(error.message)
       return res.status(400).json({error:error.message})
     }
-  
+
+
+    
     next(error)
   }
 
